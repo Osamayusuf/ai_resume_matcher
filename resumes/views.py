@@ -68,13 +68,13 @@ def home_page(request):
     if request.user.is_authenticated:
         user_resume = Resume.objects.filter(user=request.user).order_by("-id").first()
         if user_resume:
-            return redirect("match-page", resume_id=user_resume.id)
+            return redirect("/api/resumes/view/" + str(user_resume.id) + "/")
     
     first_resume = Resume.objects.order_by("id").first()
     if first_resume:
-        return redirect("match-page", resume_id=first_resume.id)
+        return redirect("/api/resumes/view/" + str(first_resume.id) + "/")
 
-    return render(request, "resumes/match.html", {"jobs": []})
+    return redirect("/users/signup/")
 
 
 def match_page(request, resume_id):
@@ -114,6 +114,6 @@ def create_resume(request):
             experience=experience
         )
 
-        return redirect('match-page', resume_id=resume.id)
+        return redirect("/api/resumes/view/" + str(resume.id) + "/")
 
     return render(request, "resumes/form.html")

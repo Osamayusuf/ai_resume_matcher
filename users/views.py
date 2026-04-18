@@ -24,7 +24,7 @@ def signup(request):
 
         user = User.objects.create_user(username=username, email=email, password=password)
         login(request, user)
-        return redirect('dashboard')
+        return redirect('/users/dashboard/')
 
     return render(request, 'users/register.html')
 
@@ -37,7 +37,7 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            return redirect('/users/dashboard/')
         else:
             messages.error(request, "Invalid username or password!")
 
@@ -46,10 +46,10 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('/users/login/')
 
 
-@login_required(login_url='login')
+@login_required(login_url='/users/login/')
 def dashboard(request):
     user_resumes = Resume.objects.filter(user=request.user).order_by('-id')
     jobs = Job.objects.all()
@@ -70,7 +70,7 @@ def dashboard(request):
     })
 
 
-@login_required(login_url='login')
+@login_required(login_url='/users/login/')
 def delete_resume(request, resume_id):
     Resume.objects.filter(id=resume_id, user=request.user).delete()
-    return redirect('dashboard')
+    return redirect('/users/dashboard/')
