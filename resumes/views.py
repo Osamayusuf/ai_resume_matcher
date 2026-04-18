@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Resume
@@ -64,8 +65,12 @@ def resume_list(request):
 
 
 def home_page(request):
+    if request.user.is_authenticated:
+        user_resume = Resume.objects.filter(user=request.user).order_by("-id").first()
+        if user_resume:
+            return redirect("match-page", resume_id=user_resume.id)
+    
     first_resume = Resume.objects.order_by("id").first()
-
     if first_resume:
         return redirect("match-page", resume_id=first_resume.id)
 
@@ -94,18 +99,17 @@ def match_page(request, resume_id):
 
     results = sorted(results, key=lambda x: x['match_score'], reverse=True)
 
-    return render(request, 'resumes/match.html', {"jobs": results})
+    return render(request, 'resumes/match.html', {"jobs": results, "resume_id": resume_id})
 
 
+@login_required(login_url='/users/login/')
 def create_resume(request):
     if request.method == "POST":
         skills = request.POST.get("skills")
         experience = request.POST.get("experience")
 
-        user = User.objects.first()
-
         resume = Resume.objects.create(
-            user=user,
+            user=request.user,
             skills=skills,
             experience=experience
         )
