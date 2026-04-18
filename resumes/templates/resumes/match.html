@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Matches</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #F9FAFB;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin: 20px auto;
+            border-radius: 12px;
+            width: 60%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .progress-container {
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background: #2563EB;
+            color: white;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .skill-tag {
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 5px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: #2563EB;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .center {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>AI Resume & Job Matcher</h1>
+
+{% for job in jobs %}
+<div class="card">
+
+    <h2>{{ job.job_title }} - {{ job.company }}</h2>
+
+    <!-- Match % with colors -->
+    {% if job.match_score >= 70 %}
+        <p style="color: green; font-weight: bold;">Match: {{ job.match_score }}%</p>
+    {% elif job.match_score >= 40 %}
+        <p style="color: orange; font-weight: bold;">Match: {{ job.match_score }}%</p>
+    {% else %}
+        <p style="color: red; font-weight: bold;">Match: {{ job.match_score }}%</p>
+    {% endif %}
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" style="width: {{ job.match_score }}%;">
+            {{ job.match_score }}%
+        </div>
+    </div>
+
+    <!-- Resume Score -->
+    <p style="margin-top:10px; font-weight:bold;">
+        Resume Score: {{ job.resume_score }}/100
+    </p>
+
+    <!-- Missing Skills -->
+    <p>Missing Skills:</p>
+    {% for skill in job.missing_skills %}
+        <span class="skill-tag">{{ skill }}</span>
+    {% endfor %}
+
+    <!-- Feedback -->
+    <p style="margin-top:10px;">
+        <strong>Feedback:</strong> {{ job.feedback }}
+    </p>
+
+</div>
+{% endfor %}
+
+<!-- Back Button -->
+<div class="center">
+    <a href="/api/resumes/create/">
+        <button class="btn">Try Another Resume</button>
+    </a>
+</div>
+
+</body>
+</html>
