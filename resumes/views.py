@@ -6,6 +6,7 @@ from .utils import calculate_match, get_missing_skills
 from jobs.models import Job
 from django.contrib.auth.models import User
 
+
 def generate_feedback(resume):
     feedback = []
 
@@ -17,6 +18,7 @@ def generate_feedback(resume):
 
     return feedback
 
+
 def get_resume_score(resume):
     score = 50
 
@@ -27,6 +29,7 @@ def get_resume_score(resume):
         score += 25
 
     return score
+
 
 @api_view(['GET'])
 def match_jobs(request, resume_id):
@@ -40,14 +43,14 @@ def match_jobs(request, resume_id):
         missing = get_missing_skills(resume.skills, job.required_skills)
         feedback = generate_feedback(resume)
 
-    results.append({
-    "job_title": job.title,
-    "company": job.company,
-    "match_score": score,
-    "missing_skills": missing,
-    "feedback": feedback,
-    "resume_score": get_resume_score(resume)
-})
+        results.append({
+            "job_title": job.title,
+            "company": job.company,
+            "match_score": score,
+            "missing_skills": missing,
+            "feedback": feedback,
+            "resume_score": get_resume_score(resume)
+        })
 
     results = sorted(results, key=lambda x: x['match_score'], reverse=True)
 
@@ -68,6 +71,7 @@ def home_page(request):
 
     return render(request, "resumes/match.html", {"jobs": []})
 
+
 def match_page(request, resume_id):
     resume = get_object_or_404(Resume, id=resume_id)
     jobs = Job.objects.all()
@@ -79,27 +83,24 @@ def match_page(request, resume_id):
         missing = get_missing_skills(resume.skills, job.required_skills)
         feedback = generate_feedback(resume)
 
-    results.append({
-    "job_title": job.title,
-    "company": job.company,
-    "match_score": score,
-    "missing_skills": missing,
-    "feedback": feedback,
-    "resume_score": get_resume_score(resume)
-})
+        results.append({
+            "job_title": job.title,
+            "company": job.company,
+            "match_score": score,
+            "missing_skills": missing,
+            "feedback": feedback,
+            "resume_score": get_resume_score(resume)
+        })
 
     results = sorted(results, key=lambda x: x['match_score'], reverse=True)
 
     return render(request, 'resumes/match.html', {"jobs": results})
 
 
-
-
 def create_resume(request):
     if request.method == "POST":
         skills = request.POST.get("skills")
         experience = request.POST.get("experience")
-
 
         user = User.objects.first()
 
